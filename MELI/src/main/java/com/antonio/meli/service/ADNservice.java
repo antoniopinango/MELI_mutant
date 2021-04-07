@@ -182,32 +182,28 @@ public class ADNservice implements IADNinterfac {
 	 */
 	public int validaDiagonal(List<String> dna) throws ADNexception{
 		int contador = 0;
-		try {
-			char[][] arregloFinal = crearMatrizB(dna);
-			for (int i = 0; i < arregloFinal.length - 1; i++) {
-				for (int j = 0; j < arregloFinal.length - 1; j++) {
-					int columna = i;
-					int fila = j;
-					if (j < arregloFinal.length - 1 && i < arregloFinal.length - 1) {
-						if (arregloFinal[columna][fila] == arregloFinal[i + 1][j + 1]) {
-							if (j + 2 < arregloFinal.length - 1 && i + 2 < arregloFinal.length - 1) {
-								if (arregloFinal[columna][fila] == arregloFinal[i + 2][j + 2]) {
-									if (j < arregloFinal.length - 1 && i < arregloFinal.length - 1) {
-										if (arregloFinal[columna][fila] == arregloFinal[i + 3][j + 3]) {
-											contador++;
-										}
+		char[][] arregloFinal = crearMatrizB(dna);
+		for (int i = 0; i < arregloFinal.length - 1; i++) {
+			for (int j = 0; j < arregloFinal.length - 1; j++) {
+				int columna = i;
+				int fila = j;
+				if (j < arregloFinal.length - 1 && i < arregloFinal.length - 1) {
+					if (arregloFinal[columna][fila] == arregloFinal[i + 1][j + 1]) {
+						if (j + 2 < arregloFinal.length - 1 && i + 2 < arregloFinal.length - 1) {
+							if (arregloFinal[columna][fila] == arregloFinal[i + 2][j + 2]) {
+								if (j < arregloFinal.length - 1 && i < arregloFinal.length - 1) {
+									if (arregloFinal[columna][fila] == arregloFinal[i + 3][j + 3]) {
+										contador++;
 									}
 								}
 							}
-
 						}
+
 					}
 				}
 			}
-		} catch (ADNexception e) {
-			
 		}
-		
+		System.out.println("Diagonal "+contador);
 		return contador;
 	}
 
@@ -273,7 +269,7 @@ public class ADNservice implements IADNinterfac {
 				}
 			}
 		}
-		System.out.println(contador);
+		System.out.println("Diagonal inverso "+contador);
 		return contador;
 	}
 
