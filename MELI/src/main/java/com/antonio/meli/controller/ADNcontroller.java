@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.antonio.meli.entity.Stats;
+import com.antonio.meli.DTO.Stats;
 import com.antonio.meli.exception.ADNexception;
 import com.antonio.meli.exception.DBexception;
 import com.antonio.meli.interfaxe.IADNinterfac;
@@ -47,9 +47,11 @@ public class ADNcontroller {
 			Boolean isMutant=false;
 			isMutant = adnService.isMutant(lista);
 			if (isMutant) {
-				 return new ResponseEntity<Boolean>(HttpStatus.OK);
+				response.put("mensaje", "El ADN se ha detectado como mutante");
+				return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
 			} else {
-				return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+				response.put("mensaje", "El ADN se ha detectado como humano");
+				return new ResponseEntity<Map<String, Object>>(response, HttpStatus.FORBIDDEN);
 			}
 		}catch (ADNexception adne) {
 			response.put("mensaje", adne.getMessage());
@@ -76,13 +78,11 @@ public class ADNcontroller {
 		} catch (DBexception dbe) {
 			response.put("mensaje", "Error al realizar la consulta en la base de datos.");
 			response.put("error", dbe.getMessage());
-			//Se envia error a la vista
 			return new ResponseEntity<Map<String,Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		} catch (Exception e) {
-			// TODO: handle exception
+			System.out.println(e.getMessage());
 		}
-		if (estadisticas== null) {
-			response.put("mensaje", "No se pudo calcular las estadisticas, no hay datos en BD");
+		if (estadisticas.getCount_human_dna()== null) {
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NO_CONTENT);
 		}
 		

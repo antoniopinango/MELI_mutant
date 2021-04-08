@@ -1,4 +1,4 @@
-package com.antonio.meli.entity;
+package com.antonio.meli.DTO;
 
 public class Stats {
 

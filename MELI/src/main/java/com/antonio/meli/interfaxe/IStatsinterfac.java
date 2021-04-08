@@ -1,6 +1,6 @@
 package com.antonio.meli.interfaxe;
 
-import com.antonio.meli.entity.Stats;
+import com.antonio.meli.DTO.Stats;
 
 public interface IStatsinterfac {
 

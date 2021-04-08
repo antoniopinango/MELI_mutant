@@ -15,8 +15,8 @@ import com.antonio.meli.repository.ADNRepository;
 @Service
 public class ADNservice implements IADNinterfac {
 
-	private static char[] letrasPermitidas = { 'A', 'T', 'C', 'G' };
-	private static int tamanoArray=4;
+	private final char[] letrasPermitidas = { 'A', 'T', 'C', 'G' };
+	private final int tamanoMinimo=4;
 
 	/**
 	 * Inyeccion de dependencia del repository
@@ -32,14 +32,14 @@ public class ADNservice implements IADNinterfac {
 	 * @return true, if successful
 	 */
 	@Override
-	public boolean isMutant(List<String> lista) throws DBexception, ADNexception {
-		boolean charInvalido = false;
+	public boolean isMutant(List<String> lista){
+		boolean charValido = false;
 		int patronesIguales = 0;
 		
 		validarTamagno(lista);
 		for (String elemento : lista) {
-			charInvalido = recorreElemento(elemento.toUpperCase(), lista.size());
-			if (!charInvalido) return charInvalido;
+			charValido = recorreElemento(elemento.toUpperCase(), lista.size());
+			if (!charValido) return charValido;
 			if (validaHorizontal(elemento))
 				patronesIguales++;
 		}
@@ -59,7 +59,7 @@ public class ADNservice implements IADNinterfac {
 
 	private void validarTamagno(List<String> lista) throws ADNexception{
 		int tamagnoList= lista.size();
-		if (tamagnoList< tamanoArray)
+		if (tamagnoList< tamanoMinimo)
 			throw new ADNexception("La lista no cuenta con el tamaño correcto para la validacion");
 	}
 	
@@ -106,14 +106,12 @@ public class ADNservice implements IADNinterfac {
 	 */
 	private boolean validaCarater(char caracter) throws ADNexception{
 		boolean flag = false;
-		
 		for (int j = 0; j < letrasPermitidas.length; j++) {
 			if (caracter == letrasPermitidas[j]) {
 				flag = true;
 				return flag;
 			}
 		}
-		
 		if (!flag) {
 			throw new ADNexception("Tiene uno o mas caracteres invalidos");
 		}
@@ -170,12 +168,15 @@ public class ADNservice implements IADNinterfac {
 			for (int j = 0; j < arregloFinal.length - 1; j++) {
 				int columna = i;
 				int fila = j;
-				if (j < arregloFinal.length - 1 && i < arregloFinal.length - 1) {
-					if (arregloFinal[columna][fila] == arregloFinal[i + 1][j + 1]) {
-						if (j + 2 < arregloFinal.length - 1 && i + 2 < arregloFinal.length - 1) {
-							if (arregloFinal[columna][fila] == arregloFinal[i + 2][j + 2]) {
-								if (j < arregloFinal.length - 1 && i < arregloFinal.length - 1) {
-									if (arregloFinal[columna][fila] == arregloFinal[i + 3][j + 3]) {
+//				valida si la posicion de j e i sea menor que la longitud del arreglo
+				if (j < arregloFinal.length - 1 && i < arregloFinal.length - 1){
+					if (arregloFinal[columna][fila] == arregloFinal[i + 1][j + 1]){
+//						valida si la posicion de j e i sea menor que la longitud del arreglo
+						if (j + 2 < arregloFinal.length - 1 && i + 2 < arregloFinal.length - 1){
+							if (arregloFinal[columna][fila] == arregloFinal[i + 2][j + 2]){
+//								valida si la posicion de j e i +3 sea menor que la longitud del arreglo
+								if (j < arregloFinal.length - 1 && i < arregloFinal.length - 1){
+									if (arregloFinal[columna][fila] == arregloFinal[i + 3][j + 3]){
 										contador++;
 									}
 								}

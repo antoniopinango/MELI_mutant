@@ -3,7 +3,7 @@ package com.antonio.meli.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.antonio.meli.entity.Stats;
+import com.antonio.meli.DTO.Stats;
 import com.antonio.meli.exception.DBexception;
 import com.antonio.meli.interfaxe.IStatsinterfac;
 import com.antonio.meli.repository.ADNRepository;
@@ -27,6 +27,9 @@ public class StatsService implements IStatsinterfac{
 		estadistica.setCount_human_dna(nroHumanos);
 		estadistica.setCount_mutant_dna(nroMutantes);
 		estadistica.setRatio(getRatio(nroMutantes, nroHumanos));
+		if(estadistica.getCount_mutant_dna()== null) {
+			throw new DBexception("No se pudo calcular las estadisticas, no hay datos en BD");
+		}
 		return estadistica;
 	}
 	
@@ -38,7 +41,7 @@ public class StatsService implements IStatsinterfac{
 	 */
 	private Float getRatio(Long nroMutantes, Long nroHumanos) {
 		Long sumatoria= nroMutantes + nroHumanos;
-		Float ratio=  (float) ((nroMutantes*100)/ sumatoria)/100;
+		Float ratio=  (float) ((nroMutantes*100)/ sumatoria);
 		return ratio;
 	}
 
