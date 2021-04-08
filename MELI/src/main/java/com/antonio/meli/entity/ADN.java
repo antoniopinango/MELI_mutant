@@ -21,6 +21,9 @@ public class ADN {
 	private Long id;
 	@Column(name = "dna")
 	private String adn;
+	private boolean mutante;
+	
+
 	@Temporal(TemporalType.DATE)
 	@Column(name = "fechacreacion")
 	private Date fechaCreacion;
@@ -29,14 +32,15 @@ public class ADN {
 		
 	}
 	
-	
-	
-	
-	
-	public ADN(String adn) {
+		
+	public ADN(String adn, boolean mutante) {
 		super();
 		this.adn = adn;
+		this.mutante = mutante;
 	}
+
+
+
 
 
 
@@ -58,9 +62,23 @@ public class ADN {
 	public void setAdn(String adn) {
 		this.adn = adn;
 	}
-		
+	public boolean isMutante() {
+		return mutante;
+	}
+	public void setMutante(boolean mutante) {
+		this.mutante = mutante;
+	}
+	public Date getFechaCreacion() {
+		return fechaCreacion;
+	}
+	public void setFechaCreacion(Date fechaCreacion) {
+		this.fechaCreacion = fechaCreacion;
+	}
+
 	@Override
 	public String toString() {
-		return "ADN [id=" + id + ", adn=" + adn + "]";
+		return "ADN [id=" + id + ", adn=" + adn + ", mutante=" + mutante + ", fechaCreacion=" + fechaCreacion + "]";
 	}
+		
+	
 }

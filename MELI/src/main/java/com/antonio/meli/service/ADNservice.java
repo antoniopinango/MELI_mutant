@@ -2,7 +2,6 @@ package com.antonio.meli.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,7 +16,7 @@ import com.antonio.meli.repository.ADNRepository;
 public class ADNservice implements IADNinterfac {
 
 	private static char[] letrasPermitidas = { 'A', 'T', 'C', 'G' };
-	private static int tamagnoArray=4;
+	private static int tamanoArray=4;
 
 	@Autowired
 	ADNRepository repo;
@@ -36,9 +35,7 @@ public class ADNservice implements IADNinterfac {
 		
 		validarTamagno(lista);
 		for (String elemento : lista) {
-			ADN adn = new ADN(elemento);
-			save(adn);
-			charInvalido = recorreElemento(elemento.toUpperCase());
+			charInvalido = recorreElemento(elemento.toUpperCase(), lista.size());
 			if (!charInvalido) return charInvalido;
 			if (validaHorizontal(elemento))
 				patronesIguales++;
@@ -47,29 +44,25 @@ public class ADNservice implements IADNinterfac {
 		patronesIguales += validaVertical(vertical);
 		patronesIguales += validaDiagonal(lista);
 		patronesIguales += validaDiagonalInverso(lista);
-		System.out.println(patronesIguales);
-		if (patronesIguales >= 2)
-			return true;
 		
-		return null != null;
+		if (patronesIguales >= 2) {
+			save(lista, true);
+			return true;
+		}else {
+			save(lista,false);
+			return false;
+		}
 	}
 
 	private void validarTamagno(List<String> lista) throws ADNexception{
 		int tamagnoList= lista.size();
-		if (tamagnoList< tamagnoArray)
+		if (tamagnoList< tamanoArray)
 			throw new ADNexception("La lista no cuenta con el tamaño correcto para la validacion");
 	}
 
-	private void save(ADN adn) throws DBexception{
-		try {
-			Optional<String> opt=repo.findByAdn(adn.getAdn());
-			if (opt.isEmpty()||opt == null) {
-				repo.save(adn);
-			}
-				
-		} catch (Exception e) {
-			throw new DBexception("Error en la persistencia de la base de datos.");
-		}	
+	private void save(List<String> adn, boolean mutante) throws DBexception{
+		ADN modelo= new ADN(adn.toString(), mutante);
+		repo.save(modelo);					
 	}
 
 	/**
@@ -78,15 +71,25 @@ public class ADNservice implements IADNinterfac {
 	 * @param elemento the elemento
 	 * @return true, if successful
 	 */
-	public boolean recorreElemento(String elemento) {
+	private boolean recorreElemento(String elemento,int tamanoLista) {
 		char[] adn = elemento.toCharArray();
 		boolean flag = false;
-		for (int i = 0; i < adn.length; i++) {
-			flag = validaCarater(adn[i]);
-			if (!flag)
-				return flag;
+		if (validaNxN(adn.length, tamanoLista)) {
+			for (int i = 0; i < adn.length; i++) {
+				flag = validaCarater(adn[i]);
+				if (!flag)
+					return flag;
+			}
+		}return flag;
+		
+	}
+
+	private boolean validaNxN(int tamanoElemento, int tamanoLista) throws ADNexception {
+		if (tamanoElemento==tamanoLista) {
+			return true;
+		}else {
+			throw new ADNexception("La lista no cuenta con el tamaño correcto para la validacion");
 		}
-		return flag;
 	}
 
 	/**
@@ -95,7 +98,7 @@ public class ADNservice implements IADNinterfac {
 	 * @param caracter the caracter
 	 * @return true, if successful
 	 */
-	public boolean validaCarater(char caracter) throws ADNexception{
+	private boolean validaCarater(char caracter) throws ADNexception{
 		boolean flag = false;
 		
 		for (int j = 0; j < letrasPermitidas.length; j++) {
@@ -118,7 +121,7 @@ public class ADNservice implements IADNinterfac {
 	 * @param elemento the elemento
 	 * @return true, if successful
 	 */
-	public boolean validaHorizontal(String elemento) {
+	private boolean validaHorizontal(String elemento) {
 		boolean flag = false;
 		String[] combinacion = { "CCCC", "TTTT", "AAAA", "GGGG" };
 		for (int i = 0; i < combinacion.length; i++) {
@@ -137,7 +140,7 @@ public class ADNservice implements IADNinterfac {
 	 * @param dna the dna
 	 * @return the list
 	 */
-	public List<String> bidimensionalVertical(List<String> dna) {
+	private List<String> bidimensionalVertical(List<String> dna) {
 		String cadenaVertical = "";
 		char[][] arreglo = crearMatrizB(dna);
 		int contador = 0;
@@ -180,7 +183,7 @@ public class ADNservice implements IADNinterfac {
 	 * @param dna the dna
 	 * @return the int
 	 */
-	public int validaDiagonal(List<String> dna) throws ADNexception{
+	private int validaDiagonal(List<String> dna) throws ADNexception{
 		int contador = 0;
 		char[][] arregloFinal = crearMatrizB(dna);
 		for (int i = 0; i < arregloFinal.length - 1; i++) {
@@ -203,7 +206,6 @@ public class ADNservice implements IADNinterfac {
 				}
 			}
 		}
-		System.out.println("Diagonal "+contador);
 		return contador;
 	}
 
@@ -240,6 +242,7 @@ public class ADNservice implements IADNinterfac {
 			System.out.println("");
 		}
 	}
+	
 
 	/**
 	 * Valida diagonal inverso.
@@ -248,7 +251,8 @@ public class ADNservice implements IADNinterfac {
 	 * @return true, if successful
 	 */
 	public int validaDiagonalInverso(List<String> dna) {
-		char[][] arregloFinal = crearMatrizInversa(dna);
+		char[][] arregloFinal = crearMatrizB(dna);
+		bidimensional(dna);
 		int contador = 0;
 		for (int i = 0; i < arregloFinal.length - 1; i++) {
 			for (int j = arregloFinal.length - 1; j >= 0; j--) {
@@ -269,19 +273,7 @@ public class ADNservice implements IADNinterfac {
 				}
 			}
 		}
-		System.out.println("Diagonal inverso "+contador);
 		return contador;
-	}
-
-	public char[][] crearMatrizInversa(List<String> dna) {
-		char[][] arregloFinal = new char[dna.size()][dna.size()];
-		for (int i = 0; i < arregloFinal.length - 1; i++) {
-			char[] caracteres = dna.get(i).toCharArray();
-			for (int j = arregloFinal.length - 1; j >= 0; j--) {
-				arregloFinal[i][j] = caracteres[j];
-			}
-		}
-		return arregloFinal;
 	}
 
 }
