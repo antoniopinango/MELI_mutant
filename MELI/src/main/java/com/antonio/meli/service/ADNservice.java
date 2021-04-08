@@ -18,6 +18,9 @@ public class ADNservice implements IADNinterfac {
 	private static char[] letrasPermitidas = { 'A', 'T', 'C', 'G' };
 	private static int tamanoArray=4;
 
+	/**
+	 * Inyeccion de dependencia del repository
+	 */
 	@Autowired
 	ADNRepository repo;
 
@@ -59,12 +62,7 @@ public class ADNservice implements IADNinterfac {
 		if (tamagnoList< tamanoArray)
 			throw new ADNexception("La lista no cuenta con el tamaño correcto para la validacion");
 	}
-
-	private void save(List<String> adn, boolean mutante) throws DBexception{
-		ADN modelo= new ADN(adn.toString(), mutante);
-		repo.save(modelo);					
-	}
-
+	
 	/**
 	 * Recorre elemento. se recorre cada elemento del string pasado por parametros
 	 * 
@@ -83,7 +81,15 @@ public class ADNservice implements IADNinterfac {
 		}return flag;
 		
 	}
-
+	
+	/**
+	 * Valida si la lista tiene igual tamaño
+	 * Horizontal y verticalmente
+	 * @param tamanoElemento
+	 * @param tamanoLista
+	 * @return
+	 * @throws ADNexception
+	 */
 	private boolean validaNxN(int tamanoElemento, int tamanoLista) throws ADNexception {
 		if (tamanoElemento==tamanoLista) {
 			return true;
@@ -91,7 +97,7 @@ public class ADNservice implements IADNinterfac {
 			throw new ADNexception("La lista no cuenta con el tamaño correcto para la validacion");
 		}
 	}
-
+	
 	/**
 	 * Valida carater. se valida si cada Base Nitrogenada es permitida
 	 * 
@@ -113,7 +119,7 @@ public class ADNservice implements IADNinterfac {
 		}
 		return flag;
 	}
-
+	
 	/**
 	 * Valida HVO. Se valida si la cadena de string mandada por params contiene
 	 * bases nitrogenadas iguales
@@ -132,33 +138,7 @@ public class ADNservice implements IADNinterfac {
 		}
 		return flag;
 	}
-
-	/**
-	 * Bidimensional vertical. metodo que arma matriz bidimensional, la recorre, y
-	 * arma una lista por cada elemento, y luego devuelve la lista
-	 * 
-	 * @param dna the dna
-	 * @return the list
-	 */
-	private List<String> bidimensionalVertical(List<String> dna) {
-		String cadenaVertical = "";
-		char[][] arreglo = crearMatrizB(dna);
-		int contador = 0;
-		List<String> arregloVertical = new ArrayList<String>();
-		for (int j = 0; j <= arreglo.length - 1; j++) {
-			for (int i = 0; i <= arreglo.length - 1; i++) {
-				contador++;
-				cadenaVertical += arreglo[i][j];
-				if (contador == arreglo.length) {
-					contador = 0;
-					arregloVertical.add(cadenaVertical);
-					cadenaVertical = "";
-				}
-			}
-		}
-		return arregloVertical;
-	}
-
+	
 	/**
 	 * Valida vertical. recorre la lista que llega por parametros y valida
 	 * 
@@ -175,10 +155,10 @@ public class ADNservice implements IADNinterfac {
 		}
 		return contador;
 	}
-
+	
 	/**
 	 * Valida diagonal. se recorre una matriz bidimensional se valida si la letra es
-	 * igual a la de abajo a la izquierda y se suma al contador
+	 * igual a la de abajo a la izquierda y se suma al contador si hay 4 iguales
 	 * 
 	 * @param dna the dna
 	 * @return the int
@@ -208,44 +188,13 @@ public class ADNservice implements IADNinterfac {
 		}
 		return contador;
 	}
-
-	/**
-	 * Crear matriz B. crea una matriz bidimensional pasandole una lista de string
-	 * por parametros
-	 * 
-	 * @param dna the dna
-	 * @return the char[][]
-	 */
-	public char[][] crearMatrizB(List<String> dna) {
-		char[][] arregloFinal = new char[dna.size()][dna.size()];
-		for (int i = 0; i <= arregloFinal.length - 1; i++) {
-			char[] caracteres = dna.get(i).toCharArray();
-			for (int j = 0; j <= arregloFinal.length - 1; j++) {
-				arregloFinal[i][j] = caracteres[j];
-			}
-		}
-		return arregloFinal;
-	}
-
-	/**
-	 * Bidimensional. imprime ordenadamente el arreglo bidimensional
-	 * 
-	 * @param dna the dna
-	 */
-	public void bidimensional(List<String> dna) {
-		char[][] arreglo = crearMatrizB(dna);
-		for (int i = 0; i <= arreglo.length - 1; i++) {
-			for (int j = 0; j <= arreglo.length - 1; j++) {
-				System.out.print(arreglo[i][j]);
-				System.out.print(" ");
-			}
-			System.out.println("");
-		}
-	}
 	
-
 	/**
 	 * Valida diagonal inverso.
+	 * Se recorre el arreglo para validar la diagonal inversa
+	 * o secundaria, 
+	 * se valida si la posicion actual es igual a la de la
+	 * siguiente fila y la posicion de la columna anterior
 	 *
 	 * @param dna the dna
 	 * @return true, if successful
@@ -274,6 +223,77 @@ public class ADNservice implements IADNinterfac {
 			}
 		}
 		return contador;
+	}
+	
+	/**
+	 * Crear matriz B. crea una matriz bidimensional pasandole una lista de string
+	 * por parametros
+	 * 
+	 * @param dna the dna
+	 * @return the char[][]
+	 */
+	public char[][] crearMatrizB(List<String> dna) {
+		char[][] arregloFinal = new char[dna.size()][dna.size()];
+		for (int i = 0; i <= arregloFinal.length - 1; i++) {
+			char[] caracteres = dna.get(i).toCharArray();
+			for (int j = 0; j <= arregloFinal.length - 1; j++) {
+				arregloFinal[i][j] = caracteres[j];
+			}
+		}
+		return arregloFinal;
+	}
+
+	/**
+	 * Metodo para guardar el ADN y si es mutante o humano en BD
+	 * @param adn
+	 * @param mutante
+	 * @throws DBexception
+	 */
+	private void save(List<String> adn, boolean mutante) throws DBexception{
+		ADN modelo= new ADN(adn.toString(), mutante);
+		repo.save(modelo);					
+	}
+
+	/**
+	 * Bidimensional vertical. metodo que arma matriz bidimensional, la recorre, y
+	 * arma una lista por cada elemento, y luego devuelve la lista
+	 * 
+	 * @param dna the dna
+	 * @return the list
+	 */
+	private List<String> bidimensionalVertical(List<String> dna) {
+		String cadenaVertical = "";
+		char[][] arreglo = crearMatrizB(dna);
+		int contador = 0;
+		List<String> arregloVertical = new ArrayList<String>();
+		for (int j = 0; j <= arreglo.length - 1; j++) {
+			for (int i = 0; i <= arreglo.length - 1; i++) {
+				contador++;
+				cadenaVertical += arreglo[i][j];
+				if (contador == arreglo.length) {
+					contador = 0;
+					arregloVertical.add(cadenaVertical);
+					cadenaVertical = "";
+				}
+			}
+		}
+		return arregloVertical;
+	}
+	
+	/**
+	 * Bidimensional. imprime ordenadamente el arreglo bidimensional
+	 * 
+	 * @param dna the dna
+	 */
+	public void bidimensional(List<String> dna) {
+		char[][] arreglo = crearMatrizB(dna);
+		for (int i = 0; i <= arreglo.length - 1; i++) {
+			for (int j = 0; j <= arreglo.length - 1; j++) {
+				System.out.print(arreglo[i][j]);
+				System.out.print(" ");
+			}
+			System.out.println("");
+		}
 	}
 
 }

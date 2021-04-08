@@ -23,21 +23,18 @@ import com.antonio.meli.interfaxe.IStatsinterfac;
 @RequestMapping("/")
 public class ADNcontroller {
 	
+	
+	/**
+	 * Inyeccion de dependencia de las clases de servicio
+	 */
 	@Autowired
 	private IADNinterfac adnService;
 	@Autowired
 	private IStatsinterfac statsService;
 
-	
-	public boolean isMutant(@RequestBody Map<String,List<String>> dna) {
-		List<String> lista= dna.get("dna");
-		boolean isMutant= false;
-		isMutant = adnService.isMutant(lista);
-		return isMutant;
 		
-	}
-	
 	/**
+	 * metodo para validar si un ADN es mutante o humano
 	 * @param dna
 	 * @return
 	 */
@@ -67,6 +64,7 @@ public class ADNcontroller {
 	}
 	
 	/**
+	 * metodo para obtener las estadisticas del adn en bd
 	 * @return
 	 */
 	@GetMapping("stats")
@@ -75,8 +73,6 @@ public class ADNcontroller {
 		Stats estadisticas= new Stats();
 		try {
 			estadisticas= statsService.getEstadistica();
-			
-			
 		} catch (DBexception dbe) {
 			response.put("mensaje", "Error al realizar la consulta en la base de datos.");
 			response.put("error", dbe.getMessage());
@@ -84,6 +80,10 @@ public class ADNcontroller {
 			return new ResponseEntity<Map<String,Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		} catch (Exception e) {
 			// TODO: handle exception
+		}
+		if (estadisticas== null) {
+			response.put("mensaje", "No se pudo calcular las estadisticas, no hay datos en BD");
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NO_CONTENT);
 		}
 		
 		return new ResponseEntity<Stats>(estadisticas, HttpStatus.OK);

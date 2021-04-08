@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.antonio.meli.entity.Stats;
+import com.antonio.meli.exception.DBexception;
 import com.antonio.meli.interfaxe.IStatsinterfac;
 import com.antonio.meli.repository.ADNRepository;
 
@@ -18,7 +19,7 @@ public class StatsService implements IStatsinterfac{
 	 *
 	 */
 	@Override
-	public Stats getEstadistica() {
+	public Stats getEstadistica() throws DBexception{
 		Stats estadistica= new Stats();
 		Long nroMutantes=repo.countByMutante(true);
 		Long nroHumanos=repo.countByMutante(false);
@@ -29,8 +30,8 @@ public class StatsService implements IStatsinterfac{
 		return estadistica;
 	}
 	
-	
 	/**
+	 * metodo para calcular el ratio
 	 * @param nroMutantes
 	 * @param nroHumanos
 	 * @return

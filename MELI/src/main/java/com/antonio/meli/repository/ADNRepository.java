@@ -11,6 +11,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 @Repository
 public interface ADNRepository extends JpaRepository<ADN, Long> {
 	
+	/**
+	 * metodo para buscar cuantos registros 
+	 * hay en BD por mutante o humano
+	 * @param mutante
+	 * @return
+	 */
 	public Long countByMutante(boolean mutante);
 	
 }
