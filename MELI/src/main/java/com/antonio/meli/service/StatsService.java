@@ -41,7 +41,7 @@ public class StatsService implements IStatsinterfac{
 	 */
 	private Float getRatio(Long nroMutantes, Long nroHumanos) {
 		Long sumatoria= nroMutantes + nroHumanos;
-		Float ratio=  (float) ((nroMutantes*100)/ sumatoria);
+		Float ratio=  (float) ((nroMutantes*100)/ sumatoria)/100;
 		return ratio;
 	}
 
