@@ -251,8 +251,14 @@ public class ADNservice implements IADNinterfac {
 	 * @throws DBexception
 	 */
 	private void save(List<String> adn, boolean mutante) throws DBexception{
-		ADN modelo= new ADN(adn.toString(), mutante);
-		repo.save(modelo);					
+		ADN modeloSave= new ADN(adn.toString(),mutante);
+		if (repo.existsByAdn(adn.toString())) {
+			ADN modeloBd= repo.findByAdn(adn.toString());
+			String isMutant= modeloBd.isMutante()==true? "Mutante":"Humano";
+			throw new DBexception("El ADN ya se encuentra registrado en la base de datos como: "+ isMutant);
+		}else {
+			repo.save(modeloSave);	
+		}					
 	}
 
 	/**
